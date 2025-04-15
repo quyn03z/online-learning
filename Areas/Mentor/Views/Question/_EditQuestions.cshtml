@@ -1,0 +1,238 @@
+@model QuestionsDTO
+
+<style>
+.error {
+    color: red;
+    margin-top: 5px;
+}
+    
+.answer-row {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+    
+.form-check-input {
+    margin-right: 10px;
+}
+    
+.form-control {
+    margin-right: 10px;
+}
+</style>
+
+<div class="modal-header bg-primary text-white">
+    <h5 class="modal-title">Edit Question</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#editQuestionModal').modal('hide');">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form asp-area="Mentor" id="editQuestionForm" asp-controller="Question" asp-action="UpdateQuestion" method="POST" onsubmit="return validateEditForm(event)">
+        <input type="hidden" name="QuizId" value="@Model.QuizId" />
+        <input type="hidden" name="QuestionId" value="@Model.QuestionId" />
+
+        <div class="form-group row">
+            <label for="editTitleInput" class="col-form-label col-md-3">Title:</label>
+            <div class="col-md-9">
+                <input type="text" class="form-control" id="editTitleInput" name="QuestionName" value="@Model.QuestionName">
+                <span class="text-danger" id="editQuestionNameError"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="edit-answers-container" class="col-form-label col-md-3">Answer:</label>
+            <div class="col-md-9" id="edit-answers-container">
+                <!-- Display options from model -->
+                @if (Model.Options != null && Model.Options.Any())
+                {
+                    @for (int i = 0; i < Model.Options.Count; i++)
+                    {
+                        <div class="answer-row">
+                            <div class="d-flex align-items-center">
+                                <input type="checkbox" class="form-check-input" name="optionsDTO[@i].IsCorrect" value="true" @(Model.Options[i].IsCorrect ? "checked" : "")>
+                                <input type="hidden" name="optionsDTO[@i].IsCorrect" value="false">
+                                <input type="hidden" name="optionsDTO[@i].OptionId" value="@Model.Options[i].OptionId">
+                                <input type="hidden" name="optionsDTO[@i].QuestionId" value="@Model.QuestionId">
+                            </div>
+                            <input type="text" class="form-control" name="optionsDTO[@i].OptionText" value="@Model.Options[i].OptionText">
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeAnswer(this)">×</button>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-9 offset-md-3">
+                <button type="button" id="edit-add-answer" class="btn btn-primary">Add Answer</button>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-9 offset-md-3">
+                <button type="submit" id="edit-save" class="btn btn-success">Update Question</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#editQuestionModal').modal('hide');">Cancel</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Function to remove answer
+    function removeAnswer(button) {
+        var row = $(button).closest('.answer-row');
+        row.remove();
+        reindexEditAnswers();
+    }
+    
+    // Add event listener for add-answer button
+    $(document).ready(function() {
+        $('#edit-add-answer').on('click', function () {
+            var container = document.getElementById('edit-answers-container');
+            const answerIndex = container.children.length;
+            const answerRow = document.createElement('div');
+            answerRow.className = 'answer-row';
+
+            // Create checkbox input for correct answer
+            const correctAnswerInput = document.createElement('input');
+            correctAnswerInput.type = 'checkbox';
+            correctAnswerInput.className = 'form-check-input';
+            correctAnswerInput.name = `optionsDTO[${answerIndex}].IsCorrect`;
+            correctAnswerInput.value = "true";
+
+            // Add hidden input for false value when checkbox is not checked
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `optionsDTO[${answerIndex}].IsCorrect`;
+            hiddenInput.value = "false";
+            
+            // Add hidden input for QuestionId
+            const questionIdInput = document.createElement('input');
+            questionIdInput.type = 'hidden';
+            questionIdInput.name = `optionsDTO[${answerIndex}].QuestionId`;
+            questionIdInput.value = "@Model.QuestionId";
+
+            // Create text input for answer
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = `optionsDTO[${answerIndex}].OptionText`;
+            input.className = 'form-control';
+
+            // Delete answer button
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'btn btn-danger btn-sm';
+            deleteButton.innerHTML = '×';
+            deleteButton.addEventListener('click', function () {
+                removeAnswer(this);
+            });
+
+            // Add elements to answer row
+            const checkboxWrapper = document.createElement('div');
+            checkboxWrapper.className = 'd-flex align-items-center';
+            checkboxWrapper.appendChild(correctAnswerInput);
+            checkboxWrapper.appendChild(hiddenInput);
+            checkboxWrapper.appendChild(questionIdInput);
+
+            answerRow.appendChild(checkboxWrapper);
+            answerRow.appendChild(input);
+            answerRow.appendChild(deleteButton);
+
+            // Add row to container
+            container.appendChild(answerRow);
+        });
+        
+        // Ensure modal can be closed with Bootstrap JavaScript
+        $('#editQuestionModal').on('hide.bs.modal', function () {
+            // Clear the content after modal is hidden
+            setTimeout(function() {
+                $('#editQuestionContainer').html('');
+            }, 300);
+        });
+    });
+
+    // Function to reindex answers after deletion
+    function reindexEditAnswers() {
+        const container = document.getElementById('edit-answers-container');
+        const rows = container.querySelectorAll('.answer-row');
+
+        rows.forEach((row, index) => {
+            // Update name of text input
+            const textInput = row.querySelector('input[type="text"]');
+            textInput.name = `optionsDTO[${index}].OptionText`;
+
+            // Update name of checkbox
+            const checkInput = row.querySelector('input[type="checkbox"]');
+            checkInput.name = `optionsDTO[${index}].IsCorrect`;
+            
+            // Update name of hidden input for IsCorrect
+            const hiddenInput = row.querySelector('input[type="hidden"][name$=".IsCorrect"]');
+            hiddenInput.name = `optionsDTO[${index}].IsCorrect`;
+            
+            // Update name of OptionId input if present
+            const optionIdInput = row.querySelector('input[name$=".OptionId"]');
+            if (optionIdInput) {
+                optionIdInput.name = `optionsDTO[${index}].OptionId`;
+            }
+            
+            // Update name of QuestionId input
+            const questionIdInput = row.querySelector('input[name$=".QuestionId"]');
+            if (questionIdInput) {
+                questionIdInput.name = `optionsDTO[${index}].QuestionId`;
+            }
+        });
+    }
+
+    // Function to validate form before submission
+    function validateEditForm(event) {
+        $('.error').remove(); // Remove existing error messages
+        
+        let isValid = true;
+        let title = $('#editTitleInput').val();
+        let answers = $('#edit-answers-container .answer-row');
+        let hasEmptyAnswer = false;
+        let hasCorrectAnswer = false;
+
+        if (title === '') {
+            $('#editQuestionNameError').html('Title of Question cannot be empty');
+            isValid = false;
+        }
+
+        answers.each(function () {
+            let answerText = $(this).find('input[type="text"]').val();
+            let correctAnswer = $(this).find('input[type="checkbox"]').is(':checked');
+
+            if (answerText === '') {
+                hasEmptyAnswer = true;
+                $(this).find('input[type="text"]').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).find('input[type="text"]').removeClass('is-invalid');
+            }
+
+            if (correctAnswer) {
+                hasCorrectAnswer = true;
+            }
+        });
+
+        if (answers.length === 0) {
+            $('<div class="error">Please add at least one answer</div>').insertAfter('#edit-answers-container');
+            isValid = false;
+        }
+
+        if (hasEmptyAnswer) {
+            $('<div class="error">All answers must be filled out</div>').insertAfter('#edit-answers-container');
+        }
+
+        if (!hasCorrectAnswer && answers.length > 0) {
+            $('<div class="error">At least one correct answer must be selected</div>').insertAfter('#edit-answers-container');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+
+        return isValid;
+    }
+</script>

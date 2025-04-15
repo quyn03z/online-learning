@@ -1,0 +1,498 @@
+
+
+.custom-select {
+    display: inline-block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem 1.75rem .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #6e707e;
+    vertical-align: middle;
+    background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%235a5c69' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right .75rem center/8px 10px no-repeat;
+    border: 1px solid #d1d3e2;
+    border-radius: .35rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none
+}
+
+    .custom-select:focus {
+        border-color: #bac8f3;
+        outline: 0;
+        box-shadow: 0 0 0 .2rem rgba(78,115,223,.25)
+    }
+
+        .custom-select:focus::-ms-value {
+            color: #6e707e;
+            background-color: #fff
+        }
+
+    .custom-select[multiple], .custom-select[size]:not([size="1"]) {
+        height: auto;
+        padding-right: .75rem;
+        background-image: none
+    }
+
+    .custom-select:disabled {
+        color: #858796;
+        background-color: #eaecf4
+    }
+
+    .custom-select::-ms-expand {
+        display: none
+    }
+
+    .custom-select:-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 #6e707e
+    }
+
+.custom-select-sm {
+    height: calc(1.5em + .5rem + 2px);
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+    padding-left: .5rem;
+    font-size: .875rem
+}
+
+.custom-select-lg {
+    height: calc(1.5em + 1rem + 2px);
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    padding-left: 1rem;
+    font-size: 1.25rem
+}
+
+
+
+    
+    .custom-file-label::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 3;
+        display: block;
+        height: calc(1.5em + .75rem);
+        padding: .375rem .75rem;
+        line-height: 1.5;
+        color: #6e707e;
+        content: "Browse";
+        background-color: #eaecf4;
+        border-left: inherit;
+        border-radius: 0 .35rem .35rem 0
+    }
+
+.custom-range {
+    width: 100%;
+    height: 1.4rem;
+    padding: 0;
+    background-color: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none
+}
+
+    .custom-range:focus {
+        outline: 0
+    }
+
+        .custom-range:focus::-webkit-slider-thumb {
+            box-shadow: 0 0 0 1px #fff,0 0 0 .2rem rgba(78,115,223,.25)
+        }
+
+        .custom-range:focus::-moz-range-thumb {
+            box-shadow: 0 0 0 1px #fff,0 0 0 .2rem rgba(78,115,223,.25)
+        }
+
+        .custom-range:focus::-ms-thumb {
+            box-shadow: 0 0 0 1px #fff,0 0 0 .2rem rgba(78,115,223,.25)
+        }
+
+    .custom-range::-moz-focus-outer {
+        border: 0
+    }
+
+    .custom-range::-webkit-slider-thumb {
+        width: 1rem;
+        height: 1rem;
+        margin-top: -.25rem;
+        background-color: #4e73df;
+        border: 0;
+        border-radius: 1rem;
+        -webkit-transition: background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        transition: background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        -webkit-appearance: none;
+        appearance: none
+    }
+
+
+
+.custom-control-label::before, .custom-file-label, .custom-select {
+    transition: background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out
+}
+
+@media (prefers-reduced-motion:reduce) {
+    .custom-control-label::before, .custom-file-label, .custom-select {
+        transition: none
+    }
+}
+
+.table-bordered {
+    border: 1px solid #e3e6f0;
+}
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #858796;
+}
+
+
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #858796
+}
+
+    .table td,
+    .table th {
+        padding: .75rem;
+        vertical-align: top;
+        border-top: 1px solid #e3e6f0
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #e3e6f0
+    }
+
+    .table tbody + tbody {
+        border-top: 2px solid #e3e6f0
+    }
+
+.table-sm td,
+.table-sm th {
+    padding: .3rem
+}
+
+.table-bordered {
+    border: 1px solid #e3e6f0
+}
+
+    .table-bordered td,
+    .table-bordered th {
+        border: 1px solid #e3e6f0
+    }
+
+    .table-bordered thead td,
+    .table-bordered thead th {
+        border-bottom-width: 2px
+    }
+
+.table-borderless tbody + tbody,
+.table-borderless td,
+.table-borderless th,
+.table-borderless thead th {
+    border: 0
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, .05)
+}
+
+.table-hover tbody tr:hover {
+    color: #858796;
+    background-color: rgba(0, 0, 0, .075)
+}
+
+.table-primary,
+.table-primary > td,
+.table-primary > th {
+    background-color: #cdd8f6
+}
+
+    .table-primary tbody + tbody,
+    .table-primary td,
+    .table-primary th,
+    .table-primary thead th {
+        border-color: #a3b6ee
+    }
+
+.table-hover .table-primary:hover {
+    background-color: #b7c7f2
+}
+
+    .table-hover .table-primary:hover > td,
+    .table-hover .table-primary:hover > th {
+        background-color: #b7c7f2
+    }
+
+.table-secondary,
+.table-secondary > td,
+.table-secondary > th {
+    background-color: #dddde2
+}
+
+    .table-secondary tbody + tbody,
+    .table-secondary td,
+    .table-secondary th,
+    .table-secondary thead th {
+        border-color: #c0c1c8
+    }
+
+.table-hover .table-secondary:hover {
+    background-color: #cfcfd6
+}
+
+    .table-hover .table-secondary:hover > td,
+    .table-hover .table-secondary:hover > th {
+        background-color: #cfcfd6
+    }
+
+.table-success,
+.table-success > td,
+.table-success > th {
+    background-color: #bff0de
+}
+
+    .table-success tbody + tbody,
+    .table-success td,
+    .table-success th,
+    .table-success thead th {
+        border-color: #89e2c2
+    }
+
+.table-hover .table-success:hover {
+    background-color: #aaebd3
+}
+
+    .table-hover .table-success:hover > td,
+    .table-hover .table-success:hover > th {
+        background-color: #aaebd3
+    }
+
+.table-info,
+.table-info > td,
+.table-info > th {
+    background-color: #c7ebf1
+}
+
+    .table-info tbody + tbody,
+    .table-info td,
+    .table-info th,
+    .table-info thead th {
+        border-color: #96dbe4
+    }
+
+.table-hover .table-info:hover {
+    background-color: #b3e4ec
+}
+
+    .table-hover .table-info:hover > td,
+    .table-hover .table-info:hover > th {
+        background-color: #b3e4ec
+    }
+
+.table-warning,
+.table-warning > td,
+.table-warning > th {
+    background-color: #fceec9
+}
+
+    .table-warning tbody + tbody,
+    .table-warning td,
+    .table-warning th,
+    .table-warning thead th {
+        border-color: #fadf9b
+    }
+
+.table-hover .table-warning:hover {
+    background-color: #fbe6b1
+}
+
+    .table-hover .table-warning:hover > td,
+    .table-hover .table-warning:hover > th {
+        background-color: #fbe6b1
+    }
+
+.table-danger,
+.table-danger > td,
+.table-danger > th {
+    background-color: #f8ccc8
+}
+
+    .table-danger tbody + tbody,
+    .table-danger td,
+    .table-danger th,
+    .table-danger thead th {
+        border-color: #f3a199
+    }
+
+.table-hover .table-danger:hover {
+    background-color: #f5b7b1
+}
+
+    .table-hover .table-danger:hover > td,
+    .table-hover .table-danger:hover > th {
+        background-color: #f5b7b1
+    }
+
+.table-light,
+.table-light > td,
+.table-light > th {
+    background-color: #fdfdfe
+}
+
+    .table-light tbody + tbody,
+    .table-light td,
+    .table-light th,
+    .table-light thead th {
+        border-color: #fbfcfd
+    }
+
+.table-hover .table-light:hover {
+    background-color: #ececf6
+}
+
+    .table-hover .table-light:hover > td,
+    .table-hover .table-light:hover > th {
+        background-color: #ececf6
+    }
+
+.table-dark,
+.table-dark > td,
+.table-dark > th {
+    background-color: #d1d1d5
+}
+
+    .table-dark tbody + tbody,
+    .table-dark td,
+    .table-dark th,
+    .table-dark thead th {
+        border-color: #a9aab1
+    }
+
+.table-hover .table-dark:hover {
+    background-color: #c4c4c9
+}
+
+    .table-hover .table-dark:hover > td,
+    .table-hover .table-dark:hover > th {
+        background-color: #c4c4c9
+    }
+
+.table-active,
+.table-active > td,
+.table-active > th {
+    background-color: rgba(0, 0, 0, .075)
+}
+
+.table-hover .table-active:hover {
+    background-color: rgba(0, 0, 0, .075)
+}
+
+    .table-hover .table-active:hover > td,
+    .table-hover .table-active:hover > th {
+        background-color: rgba(0, 0, 0, .075)
+    }
+
+.table .thead-dark th {
+    color: #fff;
+    background-color: #5a5c69;
+    border-color: #6c6e7e
+}
+
+.table .thead-light th {
+    color: #6e707e;
+    background-color: #eaecf4;
+    border-color: #e3e6f0
+}
+
+.table-dark {
+    color: #fff;
+    background-color: #5a5c69
+}
+
+    .table-dark td,
+    .table-dark th,
+    .table-dark thead th {
+        border-color: #6c6e7e
+    }
+
+    .table-dark.table-bordered {
+        border: 0
+    }
+
+    .table-dark.table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(255, 255, 255, .05)
+    }
+
+    .table-dark.table-hover tbody tr:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, .075)
+    }
+
+@media (max-width:575.98px) {
+    .table-responsive-sm {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch
+    }
+
+        .table-responsive-sm > .table-bordered {
+            border: 0
+        }
+}
+
+@media (max-width:767.98px) {
+    .table-responsive-md {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch
+    }
+
+        .table-responsive-md > .table-bordered {
+            border: 0
+        }
+}
+
+@media (max-width:991.98px) {
+    .table-responsive-lg {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch
+    }
+
+        .table-responsive-lg > .table-bordered {
+            border: 0
+        }
+}
+
+@media (max-width:1199.98px) {
+    .table-responsive-xl {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch
+    }
+
+        .table-responsive-xl > .table-bordered {
+            border: 0
+        }
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch
+}
+
+    .table-responsive > .table-bordered {
+        border: 0
+    }

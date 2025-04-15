@@ -1,0 +1,88 @@
+@model OnlineLearning.Models.Domains.CourseModels.CategoryModels.Level
+
+@{
+    ViewData["Title"] = "Delete level";
+}
+
+<div class="container-fluid container mt-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Delete level</h1>
+        <a href="@Url.Action("Levels", "SettingsCourseCategory", new { area = "Admin" })" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to list
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-danger">
+            <h6 class="m-0 font-weight-bold text-white">Confirm delete level</h6>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle fa-2x mr-3"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1">Warning!</h5>
+                        <p class="mb-0">Are you sure you want to delete this level? This action cannot be undone.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 font-weight-bold">Level information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th style="width: 200px;">ID</th>
+                            <td>@Model.LevelId</td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td>@Model.LevelName</td>
+                        </tr>
+                        <tr>
+                            <th>Created at</th>
+                            <td>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <th>Updated at</th>
+                            <td>
+                                @(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "Not updated")
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                @if (Model.Status == OnlineLearning.Enums.CategoryStatus.Showed)
+                                {
+                                    <span class="text-success">Showed</span>
+                                }
+                                else if (Model.Status == OnlineLearning.Enums.CategoryStatus.Hided)
+                                {
+                                    <span class="text-warning">Hided</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">Deleted</span>
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <form asp-action="DeleteLevel" method="post">
+                <input type="hidden" asp-for="LevelId" />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                    <a href="@Url.Action("Levels", "SettingsCourseCategory", new { area = "Admin" })" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

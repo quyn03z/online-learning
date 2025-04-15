@@ -1,0 +1,186 @@
+@model QuestionsDTO
+@{
+    ViewData["Title"] = "List Question";
+}
+<style>
+.error {
+    color: red;
+}
+</style>
+<div class="modal fade" id="createQuestion">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title">Add Question</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-area="Mentor" id="createQuestionForm" asp-controller="Question" asp-action="CreateQuestion" method="POST" onsubmit="return validateForm(event)">
+                    <input type="hidden" name="QuizId" value="@Model.QuizId" />
+                    <!-- Debug để kiểm tra -->
+                    
+
+                    <div class="form-group row">
+                        <label for="titleInput" class="col-form-label col-md-3">Title:</label>
+                        <div class="col-md-9">
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="titleInput" name="QuestionName">
+                                <br />
+                                <span style="color: red" class="text-danger" id="questionNameError"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="answers-container" class="col-form-label col-md-3">Answers:</label>
+                        <div class="col-md-9" id="answers-container"></div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-9 offset-md-3">
+                            <button type="button" id="add-answer" class="btn btn-primary">Add Answer: </button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-9 offset-md-3">
+                            <button type="submit" id="save" class="btn btn-success">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.getElementById('add-answer').addEventListener('click', function () {
+        var container = document.getElementById('answers-container');
+        const answerIndex = container.children.length;
+        const answerRow = document.createElement('div');
+        answerRow.className = 'answer-row d-flex align-items-center mb-2';
+
+        // Tạo input văn bản cho câu trả lời
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = `optionsDTO[${answerIndex}].OptionText`;
+        input.className = 'form-control me-2';
+
+        // Tạo input checkbox cho câu trả lời đúng (mặc định cho phép chọn nhiều)
+        const correctAnswerInput = document.createElement('input');
+        correctAnswerInput.type = 'checkbox';  // Mặc định là checkbox
+        correctAnswerInput.className = 'form-check-input me-2';
+        correctAnswerInput.name = `optionsDTO[${answerIndex}].IsCorrect`;
+        correctAnswerInput.value = "true";
+
+        // Thêm hidden input để gửi false khi checkbox không được chọn
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = `optionsDTO[${answerIndex}].IsCorrect`;
+        hiddenInput.value = "false";
+
+        // Nút xóa câu trả lời
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'btn btn-danger btn-sm';
+        deleteButton.innerHTML = '×';
+        deleteButton.addEventListener('click', function () {
+            container.removeChild(answerRow);
+            reindexAnswers();
+        });
+
+        // Tạo label để hiển thị "Correct" bên cạnh checkbox
+        // const correctLabel = document.createElement('label');
+        // correctLabel.textContent = 'Correct';
+        // correctLabel.className = 'me-2';
+
+        // Thêm các phần tử vào hàng câu trả lời
+        const checkboxWrapper = document.createElement('div');
+        checkboxWrapper.className = 'd-flex align-items-center me-2';
+        checkboxWrapper.appendChild(correctAnswerInput);
+        // checkboxWrapper.appendChild(correctLabel);
+        checkboxWrapper.appendChild(hiddenInput);
+
+        answerRow.appendChild(checkboxWrapper);
+        answerRow.appendChild(input);
+        answerRow.appendChild(deleteButton);
+
+        // Thêm hàng vào container
+        container.appendChild(answerRow);
+    });
+
+    // Hàm để đánh lại chỉ số sau khi xóa câu trả lời
+    function reindexAnswers() {
+        const container = document.getElementById('answers-container');
+        const rows = container.querySelectorAll('.answer-row');
+
+        rows.forEach((row, index) => {
+            // Cập nhật name của input văn bản
+            const textInput = row.querySelector('input[type="text"]');
+            textInput.name = `optionsDTO[${index}].OptionText`;
+
+            // Cập nhật name của checkbox
+            const checkInput = row.querySelector('input[type="checkbox"]');
+            checkInput.name = `optionsDTO[${index}].IsCorrect`;
+            
+            // Cập nhật name của hidden input
+            const hiddenInput = row.querySelector('input[type="hidden"]');
+            hiddenInput.name = `optionsDTO[${index}].IsCorrect`;
+        });
+    }
+
+    // Hàm kiểm tra form trước khi submit
+    function validateForm(event) {
+        let isValid = true;
+        let title = $('#titleInput').val();
+        let answers = $('#answers-container .answer-row');
+        let hasEmptyAnswer = false;
+        let hasCorrectAnswer = false;
+
+        // Xóa thông báo lỗi hiện tại
+        $('.error').html('');
+
+        if (title === '') {
+            $('#questionNameError').html('Title of Question cannot be empty');
+            isValid = false;
+        }
+
+        answers.each(function () {
+            let answerText = $(this).find('input[type="text"]').val();
+            let correctAnswer = $(this).find('input[type="checkbox"]').is(':checked');
+
+            if (answerText === '') {
+                hasEmptyAnswer = true;
+                $(this).find('input[type="text"]').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).find('input[type="text"]').removeClass('is-invalid');
+            }
+
+            if (correctAnswer) {
+                hasCorrectAnswer = true;
+            }
+        });
+
+        if (answers.length === 0) {
+            $('<div class="error">Please add at least one answer</div>').insertAfter('#answers-container');
+            isValid = false;
+        }
+
+        if (hasEmptyAnswer) {
+            $('<div class="error">All answers must be filled out</div>').insertAfter('#answers-container');
+        }
+
+        if (!hasCorrectAnswer && answers.length > 0) {
+            $('<div class="error">At least one correct answer must be selected</div>').insertAfter('#answers-container');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+
+        return isValid;
+    }
+</script>

@@ -1,0 +1,273 @@
+﻿@* @{
+    ViewData["Title"] = "Home Page";
+}
+ *@
+@using System.Linq
+@model OnlineLearning.Models.ViewModels.HomeViewModel
+
+@{
+	Layout = "_Layout";
+}
+
+<!--Start Chatbot Button -->
+<div id="chatbot-container">
+	<button id="chatbot-toggle" class="btn btn-primary rounded-circle">
+		<i class="bi bi-chat-dots"></i>
+	</button>
+	<div id="chatbot-box" class="card shadow" data-user-id="@Model.UserId">
+		<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+			<span>Chatbot</span>
+			<button id="chatbot-close" class="btn btn-sm">&times;</button>
+		</div>
+		<div class="card-body" id="chatbot-messages">
+			@if (Model.ChatbotMessage != null && Model.ChatbotMessage.Any())
+			{
+				@foreach (var message in Model.ChatbotMessage)
+				{
+					if (message.UserQuery != null)
+					{
+						<div class="message user-message">
+							<span>@message.UserQuery</span>
+						</div>
+					}
+					if (message.BotResponse != null)
+					{
+						<div class="message bot-message text-start">
+							<span> @message.BotResponse</span>
+						</div>
+					}
+				}
+			}
+			else
+			{
+				<div class="text-muted text-center">Hello, How can I help you</div>
+			}
+		</div>
+		<div class="card-footer">
+			<div class="d-flex justify-content-center">
+				<input type="text" id="chatbot-input" class="form-control mx-1" placeholder="Message..." />
+				<button id="chatbot-send" class="btn btn-primary mx-1">
+					<i class="material-icons">&#xe163;</i>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--End Chatbot Button -->
+<!-- Spinner Start -->
+<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+	<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+		<span class="sr-only">Loading...</span>
+	</div>
+</div>
+<!-- Spinner End -->
+<!-- Carousel Start -->
+<div class="container-fluid p-0 mb-5">
+	<div class="owl-carousel header-carousel position-relative">
+		@foreach (var latestCourse in Model.LatestCoures)
+		{
+			<div class="owl-carousel-item position-relative">
+				<img class="img-fluid" src="@latestCourse.CourseImageUrls.FirstOrDefault().Url" alt="Course Image" style="height: 600px; object-fit: cover; border-radius: 10px;">
+				<div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
+					<div class="container">
+						<div class="row justify-content-start">
+							<div class="col-sm-10 col-lg-8">
+								<h5 class="text-primary text-uppercase mb-3 animated slideInDown">Lastest Online Courses</h5>
+								<h1 class="display-3 text-white animated slideInDown">@latestCourse.CourseName</h1>
+								<p class="fs-5 text-white mb-4 pb-2 text-truncate-multiline">@latestCourse.Description</p>
+								<a asp-controller="Course" asp-action="DetailsCourse" asp-route-id="@latestCourse.CourseId" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
+								@* <a href="" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a> *@
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>
+<!-- Carousel End -->
+<!-- Service Start -->
+<div class="container-xxl py-5">
+	<div class="container">
+		<div class="row g-4">
+			<div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+				<div class="service-item text-center pt-3">
+					<div class="p-4">
+						<i class="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
+						<h5 class="mb-3">Skilled Instructors</h5>
+						<p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+				<div class="service-item text-center pt-3">
+					<div class="p-4">
+						<i class="fa fa-3x fa-globe text-primary mb-4"></i>
+						<h5 class="mb-3">Online Classes</h5>
+						<p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+				<div class="service-item text-center pt-3">
+					<div class="p-4">
+						<i class="fa fa-3x fa-home text-primary mb-4"></i>
+						<h5 class="mb-3">Home Projects</h5>
+						<p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+				<div class="service-item text-center pt-3">
+					<div class="p-4">
+						<i class="fa fa-3x fa-book-open text-primary mb-4"></i>
+						<h5 class="mb-3">Book Library</h5>
+						<p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Service End -->
+<!-- About Start -->
+<div class="container-xxl py-5">
+	<div class="container">
+		<div class="row g-5">
+			<div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
+				<div class="position-relative h-100">
+					<img class="img-fluid position-absolute w-100 h-100" src="~/images/about.jpg" alt="" style="object-fit: cover;">
+				</div>
+			</div>
+			<div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+				<h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
+				<h1 class="mb-4">Welcome to eLEARNING</h1>
+				<p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+				<p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
+				<div class="row gy-2 gx-4 mb-4">
+					<div class="col-sm-6">
+						<p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Skilled Instructors</p>
+					</div>
+					<div class="col-sm-6">
+						<p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Online Classes</p>
+					</div>
+					<div class="col-sm-6">
+						<p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>International Certificate</p>
+					</div>
+					<div class="col-sm-6">
+						<p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Skilled Instructors</p>
+					</div>
+					<div class="col-sm-6">
+						<p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Online Classes</p>
+					</div>
+					<div class="col-sm-6">
+						<p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>International Certificate</p>
+					</div>
+				</div>
+				<a asp-area="" asp-controller="AboutUs" asp-action="Index" class="btn btn-primary py-3 px-5 mt-2">Read More</a>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- About End -->
+<!-- Courses Start -->
+<div class="container-xxl py-5">
+	<div class="container">
+		<div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+			<h6 class="section-title bg-white text-center text-primary px-3">Courses</h6>
+			<h1 class="mb-5">Popular Courses</h1>
+		</div>
+		<div class="row g-4 justify-content-center">
+			@foreach (var popularCourse in Model.PopularCourse)
+			{
+				<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+					<div class="course-item bg-light d-flex flex-column justify-content-between" style="aspect-ratio: 1 / 1; border-radius: 15px; overflow: hidden;">
+						<div class="position-relative overflow-hidden">
+							<img class="img-fluid w-100"
+								 src="@popularCourse.CourseImageUrls.FirstOrDefault()?.Url"
+								 alt="Course Image"
+								 style="height: 200px; object-fit: cover; border-radius: 10px;">
+							<div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
+								<a asp-controller="Course" asp-action="DetailsCourse" asp-route-id="@popularCourse.CourseId" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 30px;">Read More</a>
+								@* <a asp-area="Mentee" asp-controller="Course" asp-action="DetailsCourse" asp-route-id="@popularCourse.CourseId" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</aa> *@
+							</div>
+						</div>
+						<div class="text-center p-4 flex-grow-1">
+							<h3 class="mb-0">@popularCourse.Price.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</h3>
+
+							@* <div>
+								@for (int i = 1; i <= 5; i++)
+								{
+									<i class="fa fa-star @(i <= 4 ? "text-warning" : "text-secondary")"></i>
+								}
+							</div> *@
+							<h5 class="mb-4">@popularCourse.CourseName</h5>
+						</div>
+						<div class="d-flex border-top">
+							<small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>@popularCourse.CreatorUser.FullName</small>
+							<small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>1.49 Hrs</small>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+<!-- Courses End -->
+<!-- Testimonial Start -->
+@* <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+	<div class="container">
+		<div class="text-center">
+			<h6 class="section-title bg-white text-center text-primary px-3">Testimonial</h6>
+			<h1 class="mb-5">Our Students Say!</h1>
+		</div>
+		<div class="owl-carousel testimonial-carousel position-relative">
+			<div class="testimonial-item text-center">
+				<img class="border rounded-circle p-2 mx-auto mb-3" src="~/images/testimonial-1.jpg" style="width: 80px; height: 80px;">
+				<h5 class="mb-0">Client Name</h5>
+				<p>Profession</p>
+				<div class="testimonial-text bg-light text-center p-4">
+					<p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+				</div>
+			</div>
+			<div class="testimonial-item text-center">
+				<img class="border rounded-circle p-2 mx-auto mb-3" src="~/images/testimonial-2.jpg" style="width: 80px; height: 80px;">
+				<h5 class="mb-0">Client Name</h5>
+				<p>Profession</p>
+				<div class="testimonial-text bg-light text-center p-4">
+					<p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+				</div>
+			</div>
+			<div class="testimonial-item text-center">
+				<img class="border rounded-circle p-2 mx-auto mb-3" src="~/images/testimonial-3.jpg" style="width: 80px; height: 80px;">
+				<h5 class="mb-0">Client Name</h5>
+				<p>Profession</p>
+				<div class="testimonial-text bg-light text-center p-4">
+					<p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+				</div>
+			</div>
+			<div class="testimonial-item text-center">
+				<img class="border rounded-circle p-2 mx-auto mb-3" src="~/images/testimonial-4.jpg" style="width: 80px; height: 80px;">
+				<h5 class="mb-0">Client Name</h5>
+				<p>Profession</p>
+				<div class="testimonial-text bg-light text-center p-4">
+					<p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div> *@
+<!-- Testimonial End -->
+<!-- Back to Top -->
+<a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+<style>
+	.text-truncate-multiline {
+		display: -webkit-box;
+		-webkit-line-clamp: 3; /* Giới hạn tối đa 3 dòng */
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-height: 4.5em; /* Độ cao tùy vào font-size */
+	}
+</style>

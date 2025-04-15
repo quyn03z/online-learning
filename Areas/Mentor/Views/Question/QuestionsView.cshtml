@@ -1,0 +1,235 @@
+@using OnlineLearning.Models.ViewModels
+@using OnlineLearning.Models.DTOs
+@using OnlineLearning.Enums
+@model QuestionViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+<meta charset="utf-8" />
+<title>Question Management</title>
+<!-- Thêm Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+<style>
+    .question-number {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        color: #333;
+    }
+
+    .answer {
+        padding: 5px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+    }
+
+    .answer.correct {
+        color: #ffffff;
+        background-color: #28a745;
+    }
+
+    .answer.incorrect {
+        color: #333333;
+        background-color: #f8f9fa;
+    }
+
+    .buttons-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="container">
+    <h1 class="page-heading h2" style="margin-top: 10px;">Question Management</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <form id="addQuestionForm">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">List Of Questions</h4>
+                @if (Model.Quiz != null)
+                {
+                    <h5>Quiz Name: @Model.Quiz.QuizName</h5>
+                }
+            </div>
+
+            @if (Model.Questions != null && Model.Questions.Any())
+            {
+                <div class="nestable" id="nestable">
+                    <ul class="list-group list-group-fit nestable-list-plain mb-0">
+                        @foreach (var question in Model.Questions)
+                        {
+                            <li class="list-group-item nestable-item">
+                                <div class="media">
+                                    <div class="media-body media-middle">
+                                        <p class="question-number"
+                                           data-question-id="@question.QuestionId"
+                                           data-question-name="@question.QuestionName">
+                                            Question: @question.QuestionName
+                                        </p>
+                                        <p>
+                                            <small>Type: @(question.Type == QuestionType.Radio ? "One Correct Answer" : "Multiple Correct Answers")</small>
+                                        </p>
+                                        @foreach (var option in question.Options)
+                                        {
+                                            <div class="answer @(option.IsCorrect ? "correct" : "incorrect")">
+                                                @option.OptionText
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="media-right text-right">
+                                        <div>
+                                            <a class="btn btn-primary" 
+                                               data-toggle="modal" data-target="#editQuestionModal"
+                                               onclick="loadEditQuestionForm(@question.QuestionId)">
+                                               Edit Question
+                                            </a>
+                                            <a class="btn btn-danger" data-toggle="modal" data-target="#deleteQuestionModal"
+                                               onclick="confirmDeleteQuestion(@question.QuestionId, '@question.QuestionName')">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info m-3">
+                    Please Add New Question.
+                </div>
+            }
+
+            <div class="card-header bg-white buttons-container">
+                <a data-toggle="modal" data-target="#createQuestion" class="btn btn-success">Add Question</a>
+                
+                @if (Model.Quiz != null)
+                {
+                    <a asp-area="Mentor" asp-controller="LessonQuiz" asp-action="Index" 
+                       asp-route-moduleNumber="@Model.ModuleNumber"
+                       asp-route-moduleName="@Model.ModuleName"
+                       asp-route-courseId="@Model.CourseId"
+                       class="btn btn-primary">Done</a>
+                }
+                @* <a asp-controller="LessonQuiz" asp-action="Index"
+                   asp-route-moduleNumber="@Model?.ModuleNumber"
+                   asp-route-moduleName="@Model?.ModuleName"
+                   asp-route-courseId="@Model?.CourseId"
+                   class="btn btn-danger" style="margin-top: 15px;">
+                    Cancel
+                </a> *@
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<!-- Modal xác nhận xóa câu hỏi -->
+<div class="modal fade" id="deleteQuestionModal" tabindex="-1" role="dialog" aria-labelledby="deleteQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteQuestionModalLabel">Confirm Question Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are You Sure You Want To Delete The Question?"<span id="questionNameToDelete"></span>" NO?</p>
+                <p class="text-danger">Note: All answers related to this question will also be deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteQuestionForm" method="post" action="@Url.Action("DeleteQuestion", "Question")">
+                    <input type="hidden" id="questionIdToDelete" name="questionId" value="" />
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="submit" class="btn btn-danger">Yes, Delete Question</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Dialog cho chức năng Sửa câu hỏi -->
+<div class="modal fade" id="editQuestionModal" tabindex="-1" role="dialog" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="editQuestionContainer">
+            <!-- Nội dung form sửa câu hỏi sẽ được thêm vào đây bằng Ajax -->
+        </div>
+    </div>
+</div>
+
+@{
+    var questionDTO = new QuestionsDTO();
+    if (Model.Quiz != null)
+    {
+        questionDTO.QuizId = Model.Quiz.QuizId;
+    }
+}
+@await Html.PartialAsync("_CreateQuestions", questionDTO)
+
+<!-- Thêm jQuery và Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function confirmDeleteQuestion(questionId, questionName) {
+        // Cập nhật questionId và questionName trong modal
+        document.getElementById('questionIdToDelete').value = questionId;
+        document.getElementById('questionNameToDelete').textContent = questionName;
+    }
+
+    function loadEditQuestionForm(questionId) {
+        // Gửi yêu cầu Ajax để lấy dữ liệu câu hỏi
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetQuestionById", "Question")',
+            data: { questionId: questionId },
+            success: function(data) {
+                // Cập nhật dữ liệu câu hỏi vào modal
+                $('#editQuestionContainer').html(data);
+                // Mở modal ngay khi có dữ liệu
+                $('#editQuestionModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error getting question information:', error);
+                alert('An error occurred while retrieving question information. Please try again.');
+            }
+        });
+    }
+    
+    // Xóa nội dung modal khi đóng
+    $(document).ready(function() {
+        $('#editQuestionModal').on('hidden.bs.modal', function () {
+            // Xóa nội dung của modal sau khi đóng
+            $('#editQuestionContainer').html('');
+        });
+        
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert-dismissible').alert('close');
+        }, 5000);
+    });
+</script>
