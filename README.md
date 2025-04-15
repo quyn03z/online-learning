@@ -48,19 +48,3 @@ Front-end: HTML, CSS, JavaScript, Bootstrap
 
 Version Control: Git
 
-
-Project Structure
-
-OnlineLearningPlatform/
-├── wwwroot/
-├── Configurations/
-├── Controllers/
-├── Data/
-├── Enum/
-├── Migrations/
-├── Models/
-├── Repositories/
-├── Services/
-├── Views/
-├── appsettings.json
-└── Program.cs
