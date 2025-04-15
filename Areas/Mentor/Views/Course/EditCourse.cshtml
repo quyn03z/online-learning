@@ -1,0 +1,373 @@
+﻿
+@model CourseEditDto
+
+@{
+    Layout = "_Layout";
+}
+
+
+
+
+ <div class ="container">
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="container mt-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0"><strong>Modules Course</strong></h4>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+
+                    @if (ViewBag.Modules != null)
+                    {
+                        foreach (var module in ViewBag.Modules)
+                        {
+                            <form asp-controller="LessonQuiz" asp-action="Index" method="get">
+                                <input type="hidden" name="moduleNumber" value="@module.ModuleNumber" />
+                                <input type="hidden" name="moduleName" value="@module.ModuleName" />
+                                <input type="hidden" name="CourseId" value="@module.CourseId" />
+
+                                <button type="submit" style="border: none; background: none; padding: 0; cursor: pointer;">
+                                    <h6 style="margin-bottom: 20px; text-decoration: none;">
+                                        @module.ModuleName
+                                    </h6>
+                                </button>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <h6>No modules available.</h6>
+                    }
+
+                    <form asp-controller="Modules" asp-action="Index" method="get">
+                        <input class="form-control" asp-for="CourseId" type="hidden">
+                        <button type="submit"  class="btn btn-light">Add Modules</button>
+                    </form>
+
+                </div>
+
+
+            </div>
+        
+        </div>
+
+
+        <div class="col-md-9"> 
+
+            <div class="container mt-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0"><strong>Edit Course</strong></h4>
+                    </div>
+                    <div class="card-body">
+                        <form asp-controller="Course" asp-action="editCourse" method="post">
+
+                            <input class="form-control" asp-for="CourseId" type="hidden">
+                            <input class="form-control" asp-for="OldCategoryId" type="hidden">
+
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Course Name</label>
+                                    <input class="form-control" asp-for="CourseName">
+                                    <span asp-validation-for="CourseName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Course Images (Max 4)</label>
+                                    <input type="file" name="CourseImages" class="form-control" accept="image/*" multiple>
+                                    <span id="image-validation-error" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Hidden input to store uploaded image paths -->
+                            <input type="hidden" name="UploadedImagePaths" id="uploaded-image-paths" value="@System.Text.Json.JsonSerializer.Serialize(Model.ExistingImageUrls)">
+
+                            <!-- Preview Existing and Uploaded Images -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">Images Preview (Max 4)</label>
+                                    <div id="image-preview" class="d-flex flex-wrap gap-3">
+                                        @foreach (var imageUrl in Model.ExistingImageUrls)
+                                        {
+                                            <div class="image-container">
+                                                <img src="@imageUrl" style="width: 100px; height: 100px; object-fit: cover;" class="rounded" />
+                                                <button type="button" class="remove-btn" data-path="@imageUrl">X</button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label class="form-label">Course Description</label>
+                                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Course Price</label>
+                                    <input asp-for="Price" type="number" class="form-control" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Course Discount</label>
+                                    <input asp-for="Discount" type="number" class="form-control" />
+                                    <span asp-validation-for="Discount" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Course Language</label>
+                                    <select class="form-select" asp-for="LanguageId">
+                                        @if (ViewBag.CourseLanguages != null)
+                                                {
+                                                    @foreach (var item in ViewBag.CourseLanguages)
+                                                    {
+                                                      <option value="@item.Value">@item.Text</option>
+                                                    }
+                                                }
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Course Level</label>
+                                    <select class="form-select" asp-for="LevelId">
+                                        @if (ViewBag.CourseLevels != null)
+                                        {
+                                            @foreach (var item in ViewBag.CourseLevels)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class=" row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Course Type</label>
+                                        @{
+                                            var courseCategories = ViewData["CourseCategories"] as IEnumerable<SelectListItem>;
+                                        }
+                                    <select class="form-select" asp-for="CategoryId" asp-items="courseCategories">
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-warning">Submit</button>
+                            <a asp-controller="Course" asp-action="Index" class="btn btn-light">Back</a>
+
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+   </div>
+  
+</div> 
+
+<style>
+    #image-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+        #image-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+    .image-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .remove-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const imageInput = document.querySelector('input[name="CourseImages"]');
+        const imagePreview = document.getElementById('image-preview');
+        const validationError = document.getElementById('image-validation-error');
+        const uploadedImagePathsInput = document.getElementById('uploaded-image-paths');
+        let uploadedImagePaths = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ExistingImageUrls));
+
+        if (!imageInput || !imagePreview || !validationError || !uploadedImagePathsInput) {
+            console.error("One or more elements not found: imageInput, imagePreview, validationError, uploadedImagePathsInput");
+            return;
+        }
+
+        // Function to update the hidden input with the current image paths
+        function updateHiddenInput() {
+            uploadedImagePathsInput.value = JSON.stringify(uploadedImagePaths);
+        }
+
+        // Add event listeners to existing remove buttons
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const path = btn.getAttribute('data-path');
+                const container = btn.parentElement;
+
+                // Remove the image from the preview
+                container.remove();
+                // Remove the path from uploadedImagePaths
+                uploadedImagePaths = uploadedImagePaths.filter(p => p !== path);
+                // Update the hidden input
+                updateHiddenInput();
+
+                // Delete the image from the server
+                fetch('/Mentor/Course/DeleteImage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ imagePath: path })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            console.error('Error deleting image:', data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
+        imageInput.addEventListener('change', function (e) {
+            const files = e.target.files;
+            validationError.textContent = '';
+
+            // Check total number of images (existing + new)
+            const totalImages = uploadedImagePaths.length + files.length;
+            if (totalImages > 4) {
+                validationError.textContent = 'Bạn chỉ có thể tải lên tối đa 4 ảnh (bao gồm ảnh hiện có).';
+                imageInput.value = ''; // Clear the input
+                return;
+            }
+
+            // Validate file types and sizes
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+
+                // Check file type
+                if (!file.type.startsWith('image/')) {
+                    validationError.textContent = 'Vui lòng chỉ tải lên file hình ảnh (jpg, png, v.v.).';
+                    imageInput.value = '';
+                    return;
+                }
+
+                // Check file size (limit 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    validationError.textContent = 'Kích thước ảnh không được vượt quá 5MB.';
+                    imageInput.value = '';
+                    return;
+                }
+            }
+
+            // Upload the images via AJAX
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('images', files[i]);
+            }
+
+            fetch('/Mentor/Course/UploadImages', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Display the uploaded images with remove buttons
+                        data.imagePaths.forEach(path => {
+                            const imgContainer = document.createElement('div');
+                            imgContainer.classList.add('image-container');
+
+                            const img = document.createElement('img');
+                            img.src = path;
+                            img.style.width = '100px';
+                            img.style.height = '100px';
+                            img.style.objectFit = 'cover';
+                            img.classList.add('rounded');
+
+                            // Add remove button
+                            const removeBtn = document.createElement('button');
+                            removeBtn.textContent = 'X';
+                            removeBtn.classList.add('remove-btn');
+                            removeBtn.setAttribute('data-path', path);
+                            removeBtn.addEventListener('click', function () {
+                                // Remove the image from the preview
+                                imgContainer.remove();
+                                // Remove the path from uploadedImagePaths
+                                uploadedImagePaths = uploadedImagePaths.filter(p => p !== path);
+                                // Update the hidden input
+                                updateHiddenInput();
+
+                                // Delete the image from the server
+                                fetch('/Mentor/Course/DeleteImage', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ imagePath: path })
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (!data.success) {
+                                            console.error('Error deleting image:', data.message);
+                                        }
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            });
+
+                            imgContainer.appendChild(img);
+                            imgContainer.appendChild(removeBtn);
+                            imagePreview.appendChild(imgContainer);
+
+                            // Store the image path
+                            uploadedImagePaths.push(path);
+                        });
+
+                        // Update the hidden input with the image paths
+                        updateHiddenInput();
+                    } else {
+                        validationError.textContent = data.message || 'Error uploading images.';
+                        imageInput.value = '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    validationError.textContent = 'Error uploading images.';
+                    imageInput.value = '';
+                });
+        });
+    });
+</script>

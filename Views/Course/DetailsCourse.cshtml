@@ -1,0 +1,171 @@
+@model CourseDetailDTO
+@using System.Globalization
+@* @{
+	ViewData["Title"] = Model.Course.CourseName;
+} *@
+<div class="container py-5">
+	@if (ViewBag.IsCourseExisted == false)
+	{
+		<div class="card shadow-sm border-0 mt-4">
+			<div class="card-body text-center py-5">
+				<i class="fa fa-book-open text-secondary" style="font-size: 3rem;"></i>
+				<h4 class="text-muted mt-3">Không tìm thấy khóa học phù hợp</h4>
+				<p class="text-secondary">Vui lòng quay lại sau khi nội dung được cập nhật.</p>
+			</div>
+		</div>
+	}
+	else
+	{
+		<div class="row">
+			<h6 class="text-uppercase text-danger pb-2" style="font-size: 14px;">Course Detail</h6>
+			<!-- Course Details -->
+			<div class="col-lg-8">
+				<div class="mb-5">
+					<h1 class="fw-bold" style="font-size: 32px;">@Model.Course.CourseName</h1>
+					<img src="@Model.Course.CourseImageUrls.FirstOrDefault().Url" alt="Course Image" class="img-fluid rounded mb-4"
+						 style="height: 400px; width: 800px; object-fit: cover; border-radius: 10px;">
+					<p class="text-muted" style="font-size: 16px;">@Model.Course.Description</p>
+				</div>
+
+
+				<!-- RELATED COURSES -->
+				@if (Model.RelatedCourses.Any())
+				{
+					<h2 class="mb-3">Related Courses</h2>
+					<div class="row">
+						@foreach (var course in Model.RelatedCourses)
+						{
+							<div class="col-md-6 mb-4">
+								<div class="card border-0 shadow-sm">
+									<img src="@course.Image" class="card-img-top" alt="Course Image" style="height: 200px; object-fit: cover;">
+									<div class="card-body text-center">
+										<h5 class="card-title">@course.CourseName</h5>
+										<p class="text-muted">@course.Price.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</p>
+										<div class="mb-2">
+											@for (int i = 1; i <= 5; i++)
+											{
+												<i class="fa fa-star @(i <= course.AvgRating ? "text-warning" : "text-secondary")"></i>
+											}
+											<small>(@course.SumOfRating reviews)</small>
+										</div>
+										<a href="/Course/DetailCourse/@course.CourseId" class="btn btn-outline-primary btn-sm">Read More</a>
+										<a href="/Course/Enroll?cid=@course.CourseId" class="btn btn-primary btn-sm">Join Now</a>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				}
+				<!-- RELATED COURSES -->
+			</div>
+
+			<!-- COURSE FEATURES -->
+			<div class="col-lg-4">
+				<div class="sticky-top" style="top: 80px">
+					<div class="card text-white bg-primary mb-4 shadow-sm">
+						<div class="card-header text-center fw-bold">Course Features</div>
+						<div class="card-body">
+							<p><strong>Instructor:</strong> @Model.Course.CreatorUser.FullName</p>
+							<p>
+								<strong>Rating:</strong>
+								@for (int i = 1; i <= 5; i++)
+								{
+									<i class="fa fa-star @(i <= Model.AvgRating ? "text-warning" : "text-secondary")"></i>
+								}
+							</p>
+							<p><strong>Lectures:</strong> @Model.Lecture</p>
+							<p><strong>Duration:</strong> @Model.Course.StudyTime</p>
+							<p><strong>Skill Level:</strong> @Model.Course.Level.LevelName</p>
+							<p><strong>Language:</strong> @Model.Course.Language.LanguageName</p>
+							<h4 class="text-white text-center mt-3">
+								@(Model.Course.Price == 0 ? "Free" : $"Price: {Model.Course.Price.ToString("C", new System.Globalization.CultureInfo("vi-VN"))}")
+							</h4>
+							<div class="text-center mt-3">
+								<a class="btn btn-light btn-lg"
+								   asp-area="Mentee"
+								   asp-controller="Lesson"
+								   asp-action="Index"
+								   asp-route-courseId="@Model.Course.CourseId">
+									@(
+																ViewBag.actionNeeded == "enroll" || Model.Course.Price == 0 ? "Enroll Now" :
+																ViewBag.actionNeeded == "purchase" || ViewBag.actionNeeded == "login" ? "Purchase" :
+																ViewBag.actionNeeded == "resume" ? "Resume" : "Start"
+																)
+								</a>
+							</div>
+							<div class="text-center mt-3">
+								<a class="btn btn-outline-light"
+								   asp-controller="Chat"
+								   asp-action="ChatWithMentor"
+								   asp-route-mentorId="@Model.Course.Creator">
+									<i class="fas fa-comments me-1"></i> Chat with Instructor
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- COURSE FEATURES -->
+			</div>
+
+			<!-- Reviews Section -->
+			<div class="mt-5">
+				<h3 class="mb-4">COURSE REVIEWS</h3>
+				<div class="d-flex align-items-center mb-3">
+					<span class="fs-4 fw-bold me-3">@String.Format("{0:F2}", Model.AvgRating)/5</span>
+					<div>
+						@for (int i = 1; i <= 5; i++)
+						{
+							<i class="fa fa-star @(i <= Model.AvgRating ? "text-warning" : "text-secondary")"></i>
+						}
+					</div>
+					<small class="ms-3">(@Model.AmountRating reviews)</small>
+				</div>
+
+				<!-- Review List -->
+				<div class="list-group">
+					@foreach (var rating in Model.courseRatings)
+					{
+						<div class="list-group-item d-flex">
+							<img src="@rating.User.AvatarUrl" alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+							<div>
+								<h5 class="mb-1">@rating.User.FullName</h5>
+								<small class="text-muted">@rating.CreatedAt</small>
+								<div>
+									@for (int i = 1; i <= 5; i++)
+									{
+										<i class="fa fa-star @(i <= rating.Rating ? "text-warning" : "text-secondary")"></i>
+									}
+								</div>
+								<p class="mt-2">@rating.Feedback</p>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+@* <script>
+	$(document).ready(function () {
+		$(".image-carousel").owlCarousel({
+			loop: true,
+			margin: 10,
+			nav: true,
+			autoplay: true,
+			autoplayTimeout: 3000,
+			autoplayHoverPause: true,
+			responsive: {
+				0: {
+					items: 1
+				},
+				600: {
+					items: 2
+				},
+				1000: {
+					items: 3
+				}
+			}
+		});
+	});
+</script> *@
